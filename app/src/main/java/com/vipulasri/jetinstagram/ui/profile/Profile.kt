@@ -142,11 +142,11 @@ fun Profile(title: String) {
                         contentDescription = ""
                     )
                     Icon(
-                        painter = painterResource(id = R.drawable.arrow_back),
+                        painter = painterResource(id = R.drawable.slide),
                         contentDescription = ""
                     )
                     Icon(
-                        painter = painterResource(id = R.drawable.arrow_back),
+                        painter = painterResource(id = R.drawable.tag),
                         contentDescription = ""
                     )
                 }
