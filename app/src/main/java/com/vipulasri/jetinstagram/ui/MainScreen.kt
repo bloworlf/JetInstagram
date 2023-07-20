@@ -5,9 +5,18 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -31,6 +39,8 @@ import com.vipulasri.jetinstagram.ui.HomeSection.Reels
 import com.vipulasri.jetinstagram.ui.components.bottomBarHeight
 import com.vipulasri.jetinstagram.ui.components.icon
 import com.vipulasri.jetinstagram.ui.home.Home
+import com.vipulasri.jetinstagram.ui.post.NewPost
+import com.vipulasri.jetinstagram.ui.profile.Profile
 import com.vipulasri.jetinstagram.ui.reels.Reels
 
 @ExperimentalFoundationApi
@@ -57,9 +67,9 @@ fun MainScreen() {
         when (section) {
             Home -> Home()
             Reels -> Reels()
-            Add -> Content(title = "Add Post options")
+            Add -> NewPost()
             Favorite -> Content(title = "Favorite")
-            Profile -> Content(title = "Profile")
+            Profile -> Profile(title = "Profile")
         }
     }
   }
@@ -137,7 +147,8 @@ private fun BottomBarProfile(isSelected: Boolean) {
       modifier = borderModifier
   ) {
     Box(
-        modifier = Modifier.icon()
+        modifier = Modifier
+            .icon()
             .padding(padding)
             .background(color = Color.LightGray, shape = shape)
             .clip(shape)

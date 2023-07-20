@@ -8,6 +8,7 @@ plugins {
 android {
   compileSdkVersion 30
   buildToolsVersion "30.0.3"
+  namespace 'com.vipulasri.jetinstagram'
 
   defaultConfig {
     applicationId "com.vipulasri.jetinstagram"
