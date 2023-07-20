@@ -1,26 +1,32 @@
 package com.vipulasri.jetinstagram.ui.profile
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,27 +41,31 @@ import androidx.compose.ui.unit.dp
 import com.vipulasri.jetinstagram.R
 import com.vipulasri.jetinstagram.data.PostsRepository
 import com.vipulasri.jetinstagram.data.StoriesRepository
-import com.vipulasri.jetinstagram.model.Post
 import com.vipulasri.jetinstagram.model.Story
-import com.vipulasri.jetinstagram.model.User
 import com.vipulasri.jetinstagram.model.currentUser
+import com.vipulasri.jetinstagram.ui.components.TabItem
 import com.vipulasri.jetinstagram.ui.components.icon
-import com.vipulasri.jetinstagram.ui.home.PostView
 import com.vipulasri.jetinstagram.ui.home.StoryImage
+import com.vipulasri.jetinstagram.ui.profile.tabs.UserMentions
+import com.vipulasri.jetinstagram.ui.profile.tabs.UserPosts
+import com.vipulasri.jetinstagram.ui.profile.tabs.UserReels
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @ExperimentalFoundationApi
 @Composable
 fun Profile(title: String) {
 
     val coroutineScope = rememberCoroutineScope()
+    val pagerState = rememberPagerState()
+    val scrollState = rememberScrollState()
 //val name = currentUser.
     Scaffold(
         topBar = { Toolbar(title) }) {
-        val posts by PostsRepository.posts
+//        val posts by PostsRepository.posts
         val stories by StoriesRepository.observeStories()
 
-        Column {
+        Column(modifier = Modifier.fillMaxSize()) {
             Row(
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp)
@@ -125,51 +135,26 @@ fun Profile(title: String) {
                 )
             }
             Divider()
-
-            Box(
-                modifier = Modifier.padding(8.dp),
-                contentAlignment = Alignment.Center
+            TabRow(
+                selectedTabIndex = pagerState.currentPage,
+                Modifier.background(color = Color.White)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 64.dp, end = 64.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.category),
-                        contentDescription = ""
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.slide),
-                        contentDescription = ""
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.tag),
-                        contentDescription = ""
+                tabs.forEachIndexed { index, item ->
+                    Tab(
+                        selected = index == pagerState.currentPage,
+                        text = { Text(text = item.title) },
+                        icon = { Icon(painter = painterResource(id = item.icon), "") },
+                        onClick = { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
                     )
                 }
             }
-            Divider()
-            LazyVerticalGrid(cells = GridCells.Fixed(3)) {
-                itemsIndexed(posts.filter { it.user.username == currentUser.username }) { _, post ->
-                    Post(post,
-                        onClick = {
-//                            coroutineScope.launch {
-//                                PostsRepository.performLike(post.id)
-//                            }
-                        },
-                        onLongPress = {
-//                            coroutineScope.launch {
-//                                PostsRepository.toggleLike(post.id)
-//                            }
-                        }
-                    )
-
-
-                }
+            HorizontalPager(
+                pageCount = tabs.size,
+                state = pagerState
+            ) {
+                tabs[pagerState.currentPage].screen()
             }
+
         }
     }
 }
@@ -236,19 +221,38 @@ private fun StoriesList(stories: List<Story>) {
     }
 }
 
-@ExperimentalFoundationApi
-@Composable
-private fun Post(
-    post: Post,
-    onClick: (Post) -> Unit,
-    onLongPress: (Post) -> Unit
-) {
-    UserPostView(post = post, onClick = onClick, onLongPress = onLongPress)
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Preview
 @Composable
 fun PreviewProfile() {
     Profile(title = "username")
 }
+
+@Composable
+fun TabScreen(
+    content: Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        content
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+val tabs = listOf(
+    TabItem(
+        title = "Posts",
+        icon = R.drawable.category
+    ) { TabScreen(content = UserPosts()) },
+    TabItem(
+        title = "Reels",
+        icon = R.drawable.slide
+    ) { TabScreen(content = UserReels()) },
+    TabItem(
+        title = "Mentions",
+        icon = R.drawable.tag
+    ) { TabScreen(content = UserMentions()) }
+)

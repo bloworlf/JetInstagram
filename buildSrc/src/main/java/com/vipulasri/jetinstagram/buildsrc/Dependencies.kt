@@ -12,7 +12,8 @@ object Libs {
   }
 
   object Kotlin {
-    private const val version = "1.5.21"
+//    private const val version = "1.5.31"
+    private const val version = "1.8.10"
     const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib:$version"
     const val gradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
     const val extensions = "org.jetbrains.kotlin:kotlin-android-extensions:$version"
@@ -33,7 +34,7 @@ object Libs {
 
     object Compose {
       const val snapshot = ""
-      const val version = "1.0.2"
+      const val version = "1.4.3"
       const val activityComposeVersion = "1.3.0-alpha06"
 
       const val runtime = "androidx.compose.runtime:runtime:$version"
